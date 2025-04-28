@@ -23,6 +23,11 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: .          theme: jekyll-theme-cayman
+          markdown: kramdown
+          exclude:
+            - .github/
+          title: Vibe Coding Docs
+          description: Documentação aprimorada do projeto Vibe Coding
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
