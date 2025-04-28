@@ -1,4 +1,20 @@
-# Cursor IDE Rules: The Complete Guide
+# Cursor IDE Rules: The Definitive Guide
+
+## Table of Contents
+
+1. [Introduction to Cursor Rules](#introduction)
+2. [Rule File Structure](#structure)
+3. [Frontmatter Configuration](#frontmatter)
+4. [Rule Content Organization](#content)
+5. [File References and Inclusions](#references)
+6. [Rule Hierarchy and Organization](#hierarchy)
+7. [Context Window Optimization](#optimization)
+8. [Advanced Rule Patterns](#advanced)
+9. [Technical Rule Structure](#technical)
+10. [Testing and Troubleshooting](#troubleshooting)
+11. [Team Collaboration with Rules](#collaboration)
+12. [Practical Examples](#examples)
+13. [Resources and Tools](#resources)
 
 <a id="introduction"></a>
 ## 1. Introduction to Cursor Rules
@@ -25,9 +41,9 @@ Cursor Rules are configuration files that define how the AI in Cursor IDE should
 
 ```markdown
 ---
-description: Brief description of the rule's purpose
-globs: pattern/matching/files/*  # File patterns where the rule applies
-alwaysApply: false  # Whether the rule should always be applied
+description: "Brief description of the rule's purpose"
+globs: "pattern/matching/files/*"
+alwaysApply: false
 ---
 
 # Rule Title
@@ -61,39 +77,62 @@ Cursor rules use MDC (Markdown with Context) format, which consists of:
 
 The frontmatter section contains metadata about when and how the rule should be applied.
 
-### Required Properties
+### Frontmatter Correct vs. Incorrect
 
-- **description**: A concise explanation of the rule's purpose
-  ```
-  description: General coding standards
-  ```
+#### ❌ INCORRECT
 
-### Optional Properties
+```markdown
+---
+description:
+globs:
+alwaysApply: false
+---
+```
 
-- **globs**: File patterns that trigger the rule
-  ```
-  globs: src/**/*.ext, src/**/*.otherext
-  ```
+This format is problematic because:
+- `description` is empty (this is a required field)
+- `globs` is empty (should have a pattern or be omitted)
+- An incomplete frontmatter can cause parsing errors or unexpected behavior
 
-- **alwaysApply**: Whether to include the rule in all contexts
-  ```
-  alwaysApply: true
-  ```
+#### ✅ CORRECT
+
+```markdown
+---
+description: "Error handling patterns for APIs"
+globs: "src/api/**/*.{js,ts}"
+alwaysApply: false
+---
+```
+
+Or, if intended for all applications:
+
+```markdown
+---
+description: "Global coding standards"
+alwaysApply: true
+---
+```
+
+### Frontmatter Requirements
+
+- **description**: ALWAYS provide a concise, meaningful description (required)
+- **globs**: If using, provide valid, specific patterns (don't leave empty)
+- **alwaysApply**: Explicitly use `true` or `false` based on intent (default = `false`)
 
 ### Advanced Glob Patterns
 
 ```
 # Multiple specific file types
-globs: src/**/*.{ext1,ext2,ext3}
+globs: "src/**/*.{ext1,ext2,ext3}"
 
 # Specific component patterns
-globs: src/components/**/*{Pattern,OtherPattern}.ext
+globs: "src/components/**/*{Pattern,OtherPattern}.ext"
 
 # Exclusion patterns
-globs: !node_modules/**,!dist/**,*.ext
+globs: "!node_modules/**,!dist/**,*.ext"
 
 # Multiple specific directories
-globs: src/{dir1,dir2,dir3}/**/*.ext
+globs: "src/{dir1,dir2,dir3}/**/*.ext"
 ```
 
 ### Proper Use of `alwaysApply`
@@ -302,8 +341,8 @@ You can reference other rule files to create hierarchy:
 
 ```markdown
 ---
-description: Component standards
-globs: src/components/**/*.ext
+description: "Component standards"
+globs: "src/components/**/*.ext"
 ---
 
 # Component Standards
@@ -361,11 +400,11 @@ The AI's context window is limited, so optimizing your rules is crucial for effe
 
 3. **Rule Targeting**: Use specific glob patterns to apply rules only when needed
    ```
-   globs: src/components/**/*.ext
+   globs: "src/components/**/*.ext"
    ```
    instead of
    ```
-   globs: *
+   globs: "*"
    ```
 
 4. **Rule Layering**: Build rules in layers, with specialized rules inheriting from base rules
@@ -389,8 +428,8 @@ Create rules that adapt to different situations:
 
 ```markdown
 ---
-description: Backend service patterns
-globs: src/services/**/*.ext
+description: "Backend service patterns"
+globs: "src/services/**/*.ext"
 ---
 
 # Backend Service Patterns
@@ -412,8 +451,8 @@ Create rules with reusable patterns:
 
 ```markdown
 ---
-description: Component template rules
-globs: src/components/**/*.ext
+description: "Component template rules"
+globs: "src/components/**/*.ext"
 ---
 
 # Component Patterns
@@ -439,8 +478,8 @@ Build complex rule systems through layering:
 
 ```markdown
 ---
-description: Base coding standards
-globs: *
+description: "Base coding standards"
+globs: "*"
 alwaysApply: true
 ---
 
@@ -450,8 +489,8 @@ alwaysApply: true
 
 ```markdown
 ---
-description: Language-specific standards
-globs: *.ext
+description: "Language-specific standards"
+globs: "*.ext"
 ---
 
 # Language Standards
@@ -468,8 +507,8 @@ Create rules specifically to prevent common errors:
 
 ```markdown
 ---
-description: Security guard rules
-globs: *
+description: "Security guard rules"
+globs: "*"
 alwaysApply: true
 ---
 
@@ -488,8 +527,90 @@ alwaysApply: true
 - Always use HTTPS for external requests
 ```
 
+<a id="technical"></a>
+## 9. Technical Rule Structure
+
+For complex technical specifications, use this structured format:
+
+### 1. Contextual Header
+
+Start with clear scope and relation to other rules:
+
+```markdown
+# Title of the Rule
+
+This rule applies when [specific context]. It complements the general rule [reference].
+```
+
+### 2. Interface/Component Documentation
+
+Use numbered sections with complete details:
+
+```markdown
+## 1. [Component/Interface Name]
+
+All [components] MUST implement [interface/standard].
+
+Key methods to implement:
+
+-   `[method signature]`
+    -   [purpose description]
+    -   [parameter details]
+    -   [expected behavior]
+    -   [return details]
+```
+
+### 3. Implementation Details (Numbered Subsections)
+
+Use numbered subsections for implementation aspects:
+
+```markdown
+## 2. Implementation Details
+
+### 2.1. [Specific Aspect]
+
+-   [instruction with MUST/SHOULD emphasis if necessary]
+-   [detailed instruction]
+-   [detailed instruction]
+
+### 2.2. [Another Aspect]
+
+-   [detailed instruction]
+-   [detailed instruction]
+```
+
+### 4. Contextual Code Examples
+
+Provide code examples with title and explanatory comments:
+
+```markdown
+```code
+# [Descriptive Title of Example]
+
+# [Purpose explanation]
+[code with comments]
+
+# [Explanation of important aspects]
+[more code with comments]
+```
+```
+
+### 5. Validation/Testing Section
+
+Describe tests required to validate implementation:
+
+```markdown
+## 3. [Required/Recommended] Tests
+
+-   [test description]
+    -   [specific aspect to test]
+    -   [specific aspect to test]
+-   [another test description]
+    -   [specific aspect to test]
+```
+
 <a id="troubleshooting"></a>
-## 9. Testing and Troubleshooting
+## 10. Testing and Troubleshooting
 
 ### Verifying Rule Application
 
@@ -542,7 +663,7 @@ Specific prompts to help debug rule issues:
 ```
 
 <a id="collaboration"></a>
-## 10. Team Collaboration with Rules
+## 11. Team Collaboration with Rules
 
 ### Sharing Rules Across Teams
 
@@ -573,8 +694,8 @@ Rules can serve as executable documentation of your team's standards:
 
 ```markdown
 ---
-description: Team process standards
-globs: *
+description: "Team process standards"
+globs: "*"
 alwaysApply: true
 ---
 
@@ -591,14 +712,14 @@ alwaysApply: true
 ```
 
 <a id="examples"></a>
-## 11. Practical Examples
+## 12. Practical Examples
 
 ### Universal Formatting Rule
 
 ```markdown
 ---
-description: Universal code formatting standards
-globs: *
+description: "Universal code formatting standards"
+globs: "*"
 alwaysApply: true
 ---
 
@@ -621,44 +742,100 @@ alwaysApply: true
 - Add unnecessary comments for obvious operations
 ```
 
-### Architecture Pattern Rule
+### Example of Technical Implementation Rule
 
 ```markdown
 ---
-description: Architecture patterns
-globs: src/**/*.ext
+description: "Guide for implementing external API integration"
+globs: "src/integrations/**/*.ext"
+alwaysApply: false
 ---
 
-# Architecture Patterns
+# API Integration Implementation Guide
 
-## Separation of Concerns
+This rule applies when creating or modifying integrations with external APIs. It complements the general `003-system-architecture.mdc` rule.
 
-✅ DO:
-- Separate business logic from presentation
-- Create modular, reusable components
-- Use appropriate design patterns for your problems
-- Document architectural decisions
+## 1. Core Interface (`IntegrationProvider`)
 
-❌ DON'T:
-- Mix data access, business logic, and UI in one component
-- Create tightly coupled modules
-- Reinvent patterns without good reason
-- Leave architecture decisions undocumented
+All integrations MUST implement the `IntegrationProvider` interface defined in `src/core/integration.ext`.
 
-## Best Practices
+Key methods to implement:
 
-- Follow the principle of least privilege
-- Design for extensibility
-- Create clear boundaries between layers
-- Use dependency injection where appropriate
+-   `async initialize(config: Config): Promise<void>`
+    -   Initializes the connection to the external service.
+    -   Configures authentication based on parameters in `config`.
+    -   Returns void when initialization is complete.
+
+-   `async execute(input: InputData): Promise<ResultData>`
+    -   Executes the main operation of the integration.
+    -   Receives input parameters according to specification.
+    -   Returns data structure according to contract.
+    -   Handles errors and exceptions appropriately.
+
+-   `async cleanup(): Promise<void>`
+    -   Releases resources used by the integration.
+    -   Closes active connections.
+    -   Always called when finishing use of the integration.
+
+## 2. Implementation Details
+
+### 2.1. Parameter Handling
+
+-   Validate all input parameters before processing.
+-   Use default values when optional parameters are absent.
+-   Map parameters to the format required by the external API.
+
+### 2.2. API Interaction
+
+-   Use asynchronous HTTP client for external calls.
+-   The HTTP session should be created in `initialize` and closed in `cleanup`.
+-   Handle authentication securely using tokens/keys from configuration.
+
+### 2.3. Error Handling
+
+-   Catch specific exceptions from the client library.
+-   **Wrap ALL external exceptions** in `IntegrationError` or appropriate subclass.
+-   Include relevant context in the error message (status code, response details).
+-   Preserve the original stacktrace when encapsulating exceptions.
+
+```code
+# Example of Error Wrapping
+async def _make_api_call(self, payload):
+    try:
+        # External API call
+        response = await self._client.post(self.endpoint, data=payload)
+        
+        # Check for errors in the response
+        if response.status >= 400:
+            raise IntegrationError(f"API Error: {response.status}")
+            
+        return response.data
+    except ConnectionError as e:
+        # Specific handling for connection errors
+        raise IntegrationError(f"Connection error: {str(e)}") from e
+    except Exception as e:
+        # Capturing unexpected errors
+        raise IntegrationError(f"Unexpected error: {str(e)}") from e
+```
+
+## 3. Required Tests
+
+-   Mock the external API client for unit tests.
+-   Test each main method (`initialize`, `execute`, `cleanup`):
+    -   Verify correct construction of request payload.
+    -   Verify correct handling of success responses.
+    -   Verify proper handling of different error codes.
+    -   Test different parameter combinations.
+-   Test complete lifecycle (initialization, execution, finalization).
+-   Verify configuration loading.
 ```
 
 ### Error Prevention Rule
 
 ```markdown
 ---
-description: Common error prevention
-globs: *
+description: "Common error prevention"
+globs: "*"
 alwaysApply: true
 ---
 
@@ -694,7 +871,7 @@ alwaysApply: true
 ```
 
 <a id="resources"></a>
-## 12. Resources and Tools
+## 13. Resources and Tools
 
 ### Official Resources
 - [Cursor Documentation](https://docs.cursor.com/context/rules)
